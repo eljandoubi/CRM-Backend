@@ -46,6 +46,8 @@ func main() {
 	err = insertCustomer(db, cu)
 	if err != nil {
 		log.Fatal("Error insert customer: ", err)
+	} else {
+		log.Println("Successfully inserted customer")
 	}
 
 	ct, err := getCustomer(db, cu.ID)
@@ -121,7 +123,6 @@ func deleteCustomer(db *sql.DB, id int) error {
 }
 
 func getCustomer(db *sql.DB, id int) (Customer, error) {
-
 	var cs Customer
 
 	rows, err := db.Query("SELECT * FROM customers WHERE id=$1;", id)
@@ -130,10 +131,18 @@ func getCustomer(db *sql.DB, id int) (Customer, error) {
 	}
 	defer rows.Close()
 
-	err = rows.Scan(&cs.ID, &cs.Name, &cs.Role, &cs.Email, &cs.Phone, &cs.Contacted)
+	if rows.Next() {
+		err = rows.Scan(&cs.ID, &cs.Name, &cs.Role, &cs.Email, &cs.Phone, &cs.Contacted)
+	} else {
+		// No rows found
+		return cs, sql.ErrNoRows
+	}
 
-	return cs, err
+	if err != nil {
+		return cs, err
+	}
 
+	return cs, nil
 }
 
 // getAllCustomers retrieves all customers from the database
