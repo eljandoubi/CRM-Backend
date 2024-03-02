@@ -32,7 +32,7 @@ func InitializeRouter(db *sql.DB) *mux.Router {
 func home(w http.ResponseWriter, r *http.Request) {
 	filePath := "static/index.html"
 	w.Header().Set("Content-Type", "text/html")
-	log.Println("Serve ", filePath)
+	log.Println("Serve", filePath)
 	http.ServeFile(w, r, filePath)
 }
 
